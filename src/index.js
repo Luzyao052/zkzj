@@ -3,12 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-// import 'antd-mobile/dist/antd-mobile.css';
+// 导入字体图标
+import '../src/assets/fonts/iconfont.css'
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  // <React.StrictMode> 严格模式
+    <App />,
+  // </React.StrictMode>,
   document.getElementById('root')
 );
 

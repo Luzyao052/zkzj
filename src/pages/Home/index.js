@@ -4,51 +4,24 @@ import House from '../House'
 import Profile from '../Profile'
 import { Route } from 'react-router-dom';
 import { TabBar } from 'antd-mobile';
+import './index.css'
+import tabItems from '../../utils/tabbarConfig';
 class HomeIndex extends Component {
   state = {
-    selectedTab: '/home',
-    // TabBar 数据
-    tabItems: [
-      {
-        title: '首页',
-        path: '/home',
-        icon: 'url(https://zos.alipayobjects.com/rmsportal/sifuoDUQdAFKAVcFGROC.svg)',
-        sicon: 'url(https://zos.alipayobjects.com/rmsportal/iSrlOTqrKddqbOmlvUfq.svg)'
-      },
-      {
-        title: '找房',
-        path: '/home/house',
-        icon: 'url(https://gw.alipayobjects.com/zos/rmsportal/BTSsmHkPsQSPTktcXyTV.svg)',
-        sicon: 'url(https://gw.alipayobjects.com/zos/rmsportal/ekLecvKBnRazVLXbWOnE.svg)'
-      },
-      {
-        title: '我的',
-        path: '/home/profile',
-        icon: 'url(https://zos.alipayobjects.com/rmsportal/psUFoAMjkCcjqtUCNPxB.svg)',
-        sicon: 'url(https://zos.alipayobjects.com/rmsportal/IIRLrXXrFAhXVdhMWgUI.svg)'
-      },
-    ]
+    selectedTab: '/home'
   };
+  // {/* tabbar渲染 */}
   renderTabBarItems = () => {
     return (
-      this.state.tabItems.map(item => {
+      tabItems.map(item => {
         return (
           <TabBar.Item
             title={item.title}
-            key="Life"
-            icon={<div style={{
-              width: '22px',
-              height: '22px',
-              background: `${item.icon} center center /  21px 21px no-repeat`
-            }}
-            />
+            key={item.path}
+            icon={
+              <i className={`iconfont ${item.icon}`} />
             }
-            selectedIcon={<div style={{
-              width: '22px',
-              height: '22px',
-              background: `${item.sicon} center center /  21px 21px no-repeat`
-            }}
-            />
+            selectedIcon={<i className={`iconfont ${item.icon}`} />
             }
             selected={this.state.selectedTab === item.path}
             // badge={1} 徽标数
