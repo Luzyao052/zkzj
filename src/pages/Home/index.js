@@ -8,8 +8,20 @@ import './index.css'
 import tabItems from '../../utils/tabbarConfig';
 class HomeIndex extends Component {
   state = {
-    selectedTab: '/home'
+    selectedTab: this.props.location.pathname,
   };
+   
+  componentDidMount() {
+    // 监听路由变化 => 不能用PureCompotent做性能优化
+    this.props.history.listen((params) => {
+      if (params.pathname === this.state.selectedTab) return false
+      // console.log(111);
+      this.setState({
+        selectedTab: params.pathname,
+      });
+    })
+  }
+
   // {/* tabbar渲染 */}
   renderTabBarItems = () => {
     return (
@@ -28,11 +40,10 @@ class HomeIndex extends Component {
             onPress={() => {
               // console.log(this);
               this.props.history.push(item.path)
-              this.setState({
-                selectedTab: item.path,
-              });
+              // this.setState({
+              //   selectedTab: item.path,
+              // });
             }}
-            data-seed="logId"
           >
           </TabBar.Item>
         )
@@ -40,8 +51,6 @@ class HomeIndex extends Component {
     )
   }
   render() {
-
-
     return (
       <div className="app">
         <Route exact path="/home" component={Index} />

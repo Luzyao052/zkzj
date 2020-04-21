@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import { Carousel } from 'antd-mobile';
+import { Carousel, Flex } from 'antd-mobile';
 import { apiSwiper } from '../../api/home';
+import './index.css'
+import navs from '../../utils/navConfig';
+
 class index extends Component {
   state = {
     data: [],
@@ -51,11 +54,28 @@ class index extends Component {
       </Carousel>
     )
   }
+  // 渲染菜单
+  renderNav = () => {
+    return (
+      navs.map(item => {
+        return (
+          <Flex.Item onClick={() => this.props.history.push(item.path)} key={item.id}>
+            <img alt="" src={item.img} />
+            <p>{item.title}</p>
+          </Flex.Item>
+        )
+      })
+    )
+  }
   render() {
     return (
       <div className="index">
         {/* 轮播 */}
         {this.renderSwiper()}
+        {/* flex布局 */}
+        <Flex className="nav">
+          {this.renderNav()}
+        </Flex>
       </div>
     );
   }
