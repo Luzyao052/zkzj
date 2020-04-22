@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
-import { Carousel, Flex } from 'antd-mobile';
-import { apiSwiper } from '../../api/home';
-import './index.css'
+import { Carousel, Flex, Grid } from 'antd-mobile';
+import { apiSwiper, apiGroups } from '../../api/home';
+import './index.scss'
 import navs from '../../utils/navConfig';
 
 class index extends Component {
   state = {
-    data: [],
+    data: [], // 轮播
     imgHeight: 176,
-    auto: false
+    auto: false,
+    groups: [] // 租房小组
   }
   componentDidMount() {
     // simulate img loading
     this.getSwiper()
+    this.getGroups()
   }
   // 获取轮播图
   getSwiper = async () => {
@@ -67,6 +69,41 @@ class index extends Component {
       })
     )
   }
+  // 获取宫格
+  getGroups = async () => {
+    const res = await apiGroups()
+    this.setState({
+      groups: res.body
+    }, () => {
+      this.setState({
+        auto: true
+      })
+    })
+  }
+  // 渲染租房小组-宫格
+  renderGroups = () => {
+    return (
+      <Grid data={this.state.groups}
+        columnNum={2}
+        // 关闭默认正方形
+        square={false}
+        hasLine={false}
+        renderItem={item => {
+          // console.log(item)
+          return (
+            // item结构
+            <Flex className="grid-item" justify="between">
+              <div className="desc">
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
+              </div>
+              <img src={`http://localhost:8080${item.imgSrc}`} alt="" />
+            </Flex>
+          )
+        }}
+      />
+    )
+  }
   render() {
     return (
       <div className="index">
@@ -76,6 +113,15 @@ class index extends Component {
         <Flex className="nav">
           {this.renderNav()}
         </Flex>
+        {/* 租房小组 */}
+        <div className="group">
+          <Flex className="group-title" justify="between">
+            <h3>租房小组</h3>
+            <span>更多</span>
+          </Flex>
+          {/* 租房小组-宫格布局 */}
+          {this.renderGroups()}
+        </div>
       </div>
     );
   }
