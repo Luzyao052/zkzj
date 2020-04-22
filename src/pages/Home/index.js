@@ -10,18 +10,26 @@ class HomeIndex extends Component {
   state = {
     selectedTab: this.props.location.pathname,
   };
-   
+
   componentDidMount() {
+    this.routerJump()
+  }
+  routerJump = () => {
     // 监听路由变化 => 不能用PureCompotent做性能优化
-    this.props.history.listen((params) => {
+    this.config = this.props.history.listen((params) => {
       if (params.pathname === this.state.selectedTab) return false
       // console.log(111);
       this.setState({
         selectedTab: params.pathname,
       });
     })
+    // console.log(this.config);
   }
-
+  componentWillUnmount() {
+    // 销毁路由监听事件
+    this.config()
+  }
+  
   // {/* tabbar渲染 */}
   renderTabBarItems = () => {
     return (

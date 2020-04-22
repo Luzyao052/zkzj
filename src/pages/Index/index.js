@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Carousel, Flex, Grid } from 'antd-mobile';
-import { apiSwiper, apiGroups } from '../../api/home';
+import { Carousel, Flex, Grid, WingBlank, SearchBar } from 'antd-mobile';
+import { apiSwiper, apiGroups, apiNews } from '../../api/home';
 import './index.scss'
 import navs from '../../utils/navConfig';
 
@@ -9,12 +9,31 @@ class index extends Component {
     data: [], // 轮播
     imgHeight: 176,
     auto: false,
-    groups: [] // 租房小组
+    groups: [], // 租房小组
+    news: [],// 最新资讯
+    keyword: ''
   }
   componentDidMount() {
     // simulate img loading
-    this.getSwiper()
-    this.getGroups()
+    // this.getSwiper()
+    // this.getGroups()
+    // this.getNews()
+    this.loadDatas()
+  }
+  // 初始化整体数据
+  loadDatas = async () => {
+    const apis = [apiSwiper(), apiGroups(), apiNews()];
+    let [swiper, groups, news] = await Promise.all(apis);
+    // console.log(swiper, groups, news);
+    this.setState({
+      data: swiper.body,
+      groups: groups.body,
+      news: news.body
+    }, () => {
+      this.setState({
+        auto: true
+      })
+    })
   }
   // 获取轮播图
   getSwiper = async () => {
@@ -104,6 +123,55 @@ class index extends Component {
       />
     )
   }
+  // 最新资讯
+  getNews = async () => {
+    const res = await apiNews()
+    // console.log(res);
+    this.setState({
+      news: res.body
+    })
+  }
+  // 渲染最新资讯
+  renderNews = () => {
+    return this.state.news.map(item => (
+      <div className="news-item" key={item.id}>
+        <div className="imgwrap">
+          <img
+            className="img"
+            src={`https://api-haoke-web.itheima.net${item.imgSrc}`}
+            alt=""
+          />
+        </div>
+        <Flex className="content" direction="column" justify="between">
+          <h3 className="title">{item.title}</h3>
+          <Flex className="info" justify="between">
+            <span>{item.from}</span>
+            <span>{item.date}</span>
+          </Flex>
+        </Flex>
+      </div>
+    ))
+  }
+  // 渲染顶部导航
+  renderTopNav = () => {
+    return (
+      <Flex justify="around" className="topNav">
+        <div className="searchBox">
+          <div className="city">
+            北京<i className="iconfont icon-arrow" />
+          </div>
+          <SearchBar
+            value={this.state.keyword}
+            onChange={(v) => this.setState({ keyword: v })}
+            placeholder="请输入小区或地址"
+          />
+        </div>
+        <div className="map">
+          <i key="0" className="iconfont icon-map" />
+        </div>
+      </Flex>
+    )
+  }
   render() {
     return (
       <div className="index">
@@ -122,6 +190,13 @@ class index extends Component {
           {/* 租房小组-宫格布局 */}
           {this.renderGroups()}
         </div>
+        {/* 最新资讯 */}
+        <div className="news">
+          <h3 className="group-title">最新资讯</h3>
+          <WingBlank size="md">{this.renderNews()}</WingBlank>
+        </div>
+        {/*  // 渲染顶部导航 */}
+        {this.renderTopNav()}
       </div>
     );
   }
