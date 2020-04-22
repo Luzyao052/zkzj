@@ -24,5 +24,11 @@ ul,li {
     touch-action: none;  
     box-sizing: border-box; 
 }
+#root {
+  height: 100%;
+}
+.app {
+  height: 100%;
+}
 
 

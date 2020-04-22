@@ -166,7 +166,7 @@ class index extends Component {
             placeholder="请输入小区或地址"
           />
         </div>
-        <div className="map">
+        <div className="map" onClick={()=>{this.props.history.push('/map')}}>
           <i key="0" className="iconfont icon-map" />
         </div>
       </Flex>
