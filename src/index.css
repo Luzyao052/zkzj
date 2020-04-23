@@ -20,8 +20,9 @@ ul,li {
 }
 
 * {
-    /* // touch-action: pan-y;*/
-    touch-action: none;  
+    touch-action: pan-y;
+    /* 虽然也可以解决轮播滑动后出现的警告，但是在移动端上则没有交互 */
+    /* touch-action: none;   */
     box-sizing: border-box; 
 }
 #root {

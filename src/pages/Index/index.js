@@ -3,6 +3,7 @@ import { Carousel, Flex, Grid, WingBlank, SearchBar } from 'antd-mobile';
 import { apiSwiper, apiGroups, apiNews } from '../../api/home';
 import './index.scss'
 import navs from '../../utils/navConfig';
+import { getCurrCity } from '../../utils/fixcity';
 
 class index extends Component {
   state = {
@@ -11,7 +12,15 @@ class index extends Component {
     auto: false,
     groups: [], // 租房小组
     news: [],// 最新资讯
-    keyword: ''
+    keyword: '',
+    cityName: '--', // 城市名称
+    // 当前城市
+    curCity: {
+      // 城市名字
+      label: '--',
+      // 城市ID
+      value: ''
+    },
   }
   componentDidMount() {
     // simulate img loading
@@ -19,6 +28,7 @@ class index extends Component {
     // this.getGroups()
     // this.getNews()
     this.loadDatas()
+    this.getCity()
   }
   // 初始化整体数据
   loadDatas = async () => {
@@ -157,8 +167,10 @@ class index extends Component {
     return (
       <Flex justify="around" className="topNav">
         <div className="searchBox">
-          <div className="city">
-            北京<i className="iconfont icon-arrow" />
+          <div className="city" onClick={() => {
+            this.props.history.push('/cityList')
+          }}>
+            {this.state.curCity.label}<i className="iconfont icon-arrow" />
           </div>
           <SearchBar
             value={this.state.keyword}
@@ -166,11 +178,21 @@ class index extends Component {
             placeholder="请输入小区或地址"
           />
         </div>
-        <div className="map" onClick={()=>{this.props.history.push('/map')}}>
+        <div className="map" onClick={() => { this.props.history.push('/map') }}>
           <i key="0" className="iconfont icon-map" />
         </div>
       </Flex>
     )
+  }
+  // 定位当前城市
+  getCity = async () => {
+    const res = await getCurrCity()
+    // console.log(res);
+      this.setState({
+        // cityName: res.label
+        curCity: res
+      })
+
   }
   render() {
     return (
