@@ -9,24 +9,31 @@ export const setLocal = (key, val) => localStorage.setItem(key, val)
 export const getLocal = key => localStorage.getItem(key)
 // 删除本地数据
 export const delLocal = key => localStorage.removeItem(key)
-
-export const getCurrCity = () => {
+// 这是根据百度地图API获取定位城市名字
+const getCityName = () => {
+  return new Promise((resolve, reject) => {
+    const { BMap } = window
+    var myCity = new BMap.LocalCity();
+    myCity.get(async (result) => {
+      resolve(result.name) // 邯郸市
+    });
+  })
+}
+// 导出一个获取到的城市的方法
+export const getCurrCity = async () => {
   const currCity = JSON.parse(getLocal(KEY))
-  if (!currCity) {
+  // 获取到城市名字=》做比对 
+  // 同步方式
+  let res = await getCityName(); // 邯郸市
+  let realName = res.substr(0, 2)// 邯郸
+  if (!currCity || realName !== currCity.label) {
     // 如果本地没有数据
-    return new Promise((resolve, reject) => {
-      // 这是根据百度地图API获取定位城市名字
-      const { BMap } = window
-      var myCity = new BMap.LocalCity();
-      myCity.get(async (result) => {
-        var cityName = result.name.slice(0, 2);
-        // console.log("当前定位城市:" + cityName);
-        const res = await apiAreaInfo({ name: cityName })
-        // console.log(res);
-        // 本地存储
-        setLocal(KEY, JSON.stringify(res.body))
-        resolve(res.body)
-      });
+    return new Promise(async (resolve, reject) => {
+      const { body } = await apiAreaInfo({ name: realName })
+      // console.log(body);
+      // 本地存储
+      setLocal(KEY, JSON.stringify(body))
+      resolve(body)
     })
   } else {
     return Promise.resolve(currCity)
