@@ -26,7 +26,7 @@ export const getCurrCity = async () => {
   // 同步方式
   let res = await getCityName(); // 邯郸市
   let realName = res.substr(0, 2)// 邯郸
-  if (!currCity || realName !== currCity.label) {
+  if (!currCity) {
     // 如果本地没有数据
     return new Promise(async (resolve, reject) => {
       const { body } = await apiAreaInfo({ name: realName })
@@ -39,3 +39,4 @@ export const getCurrCity = async () => {
     return Promise.resolve(currCity)
   }
 }
+export { KEY }

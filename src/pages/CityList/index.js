@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { apiAreaList, apiHotCity } from '../../api/city';
-import { getCurrCity } from '../../utils/fixcity';
+import { getCurrCity, KEY, setLocal } from '../../utils/fixcity';
 import { List, AutoSizer } from 'react-virtualized';
-import { NavBar, Icon } from 'antd-mobile';
+import { NavBar, Icon, Toast } from 'antd-mobile';
 import './index.scss'
 class index extends Component {
   // 设置状态数据
@@ -10,10 +10,13 @@ class index extends Component {
     // 归类的城市数据
     cityList: {},
     // 归类的城市数据的索引
-    cityIndex: []
+    cityIndex: [],
+    activeIndex: 0 // 列表右侧选中的下标
   }
   componentDidMount() {
     this.getCityList()
+    // 创建ref
+    // this.listRef = React.createRef();
   }
   // 列表布局
   rowRenderer = ({
@@ -33,20 +36,19 @@ class index extends Component {
     return (
       <div key={key} style={style} className="city-item">
         <div className="title">{this.formatLetter(letter)}</div>
-        {/* <div className="name">{item.label}</div> */}
-        {item.map(item => (<div key={item.value} className="title">{item.label}</div>))}
+        {item.map(item => (<div onClick={() => this.changeCity(item)} key={item.value} className="name">{item.label}</div>))}
       </div>
     );
   }
 
   // 格式化列表的title
-  formatLetter = (letter) => {
+  formatLetter = (letter, isRight) => {
     // console.log(letter);
     switch (letter) {
       case '#':
-        return '当前城市';
+        return isRight ? '当' : '当前城市';
       case 'hot':
-        return '热门城市';
+        return isRight ? '热' : '热门城市';
       default:
         // 处理成大写
         return letter.toUpperCase()
@@ -92,6 +94,58 @@ class index extends Component {
       cityIndex
     }
   }
+  // 动态计算高度
+  excueHeight = ({ index }) => {
+    const { cityList, cityIndex } = this.state
+    let letter = cityIndex[index]
+    return 36 + 50 * cityList[letter].length
+  }
+  // 切换城市
+  changeCity = (info) => {
+    // console.log(info);
+    const hasData = ['北京', '上海', '广州', '深圳'];
+    if (hasData.includes(info.label)) {
+      // 更新当前城市数据
+      setLocal(KEY, JSON.stringify(info))
+      // 跳转到首页
+      this.props.history.push('/')
+    } else {
+      Toast.info('该城市暂无房源数据！')
+    }
+  }
+  // 点击渲染右侧索引
+  renderCityIndex = () => {
+    const { cityIndex, activeIndex } = this.state;
+    return cityIndex.map((item, index) => {
+      return (
+        <li
+          key={item}
+          className="city-index-item"
+          onClick={() => {
+            // console.log(this.listRef.scrollToRow);
+            this.listRef.scrollToRow(index)
+            this.setState({
+              activeIndex: index
+            })
+          }}
+        >
+          <span className={activeIndex === index ? 'index-active' : ''}>
+            {this.formatLetter(item, true)}
+          </span>
+        </li>
+      )
+    })
+  }
+  // 滑动渲染右侧索引
+  onRowsRendered = ({ startIndex }) => {
+    if (this.state.activeIndex !== startIndex) {
+      // console.log(startIndex);
+      // startIndex 当前滚动行的索引
+      this.setState({
+        activeIndex: startIndex
+      })
+    }
+  }
   render() {
     return (
       <div className="navbar">
@@ -106,14 +160,21 @@ class index extends Component {
         <AutoSizer>
           {({ height, width }) => (
             <List
+              ref={(e) => this.listRef = e}
+              scrollToAlignment='start'
+              onRowsRendered={this.onRowsRendered}
               height={height}
               rowCount={this.state.cityIndex.length}
-              rowHeight={120}
+              rowHeight={this.excueHeight}
               rowRenderer={this.rowRenderer}
               width={width}
             />
           )}
         </AutoSizer>
+        {/* 右侧索引列表 */}
+        <ul className="city-index">
+          {this.renderCityIndex()}
+        </ul>
       </div>
     );
   }
