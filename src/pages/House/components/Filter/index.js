@@ -13,6 +13,16 @@ const titleSelectedStatus = {
   price: false,
   more: false
 }
+// 选中数据维护(测试)
+const selectedValues = {
+  area: ['area', 'null'],
+  // area: ['area', 'AREA|69cc5f6d-4f29-a77c', 'AREA|73aa1890-64c7-51d9'],
+  mode: ['null'],
+  // mode: ['true'],
+  price: ['null'],
+  // price: ['PRICE|1000'],
+  more: []
+}
 export default class Filter extends Component {
   state = {
     titleSelectedStatus, // 高亮
@@ -21,6 +31,8 @@ export default class Filter extends Component {
   }
   componentDidMount() {
     this.getFilterData()
+    // 初始化：存储到实例属性上
+    this.selectedValues = { ...selectedValues }
   }
   // 传给子组件使用的高亮
   onHighLight = (info) => {
@@ -37,15 +49,23 @@ export default class Filter extends Component {
     return openType === 'area' || openType === 'mode' || openType === 'price'
   }
   // 确定选择过滤条件
-  onOk = () => {
+  onOk = (curSel) => {
+    // console.log(curSel);
+    const { openType } = this.state;
+    // 存储当前选中筛选数据
+    this.selectedValues[openType] = curSel
     this.setState({
-      openType: ''
+      openType: '',
+      // 处理高亮
+      titleSelectedStatus: this.handlerSel()
     })
   }
   // 关闭前三个筛选器内容和遮罩层
   onCancel = () => {
     this.setState({
-      openType: ''
+      openType: '',
+      // 处理高亮
+      titleSelectedStatus: this.handlerSel()
     })
   }
 
@@ -53,7 +73,68 @@ export default class Filter extends Component {
   getFilterData = async () => {
     const { value } = await getCurrCity()
     const res = await apiHouseCondition({ id: value })
-    console.log(res);
+    // console.log(res);
+    // 把组件筛选数据存放到组件实例的成员属性上
+    this.filterData = res.body;
+  }
+  // 渲染picker并提供对应的数据
+  renderPicker = () => {
+    if (this.isShowPicker()) {
+      const { area, subway, rentType, price } = this.filterData
+      const { openType } = this.state;
+      // 传递对应的picker数据
+      let data, cols = 1;
+      // 当前选中的值
+      let curSel = this.selectedValues[openType];
+      // 根据openType去取当前点击的picker数据
+      switch (openType) {
+        case 'area':
+          data = [area, subway]
+          cols = 3;
+          break;
+        case 'mode':
+          data = rentType
+          break;
+        case 'price':
+          data = price
+          break;
+        default:
+          break;
+      }
+      return <FilterPicker data={data} key={openType} cols={cols} curSel={curSel} onOk={this.onOk} onCancel={this.onCancel} />
+    }
+  }
+  // 处理筛选器选中后有无条件的高亮状态
+  handlerSel = () => {
+    // 存储新的高亮状态
+    const newStatus = { ...titleSelectedStatus }
+    // 遍历存储的选中数据，确定是否高亮
+    Object.keys(this.selectedValues).forEach(key => {
+      // 获取当前选中的值
+      var selectVal = this.selectedValues[key]
+      // console.log(selectVal);
+      // 判断是否高亮
+      if (key === 'area' && (selectVal[1] !== 'null' || selectVal[0] === 'subway')) {
+        newStatus[key] = true
+      } else if (key === 'mode' && selectVal[0] !== 'null') {
+        newStatus[key] = true
+      } else if (key === 'price' && selectVal[0] !== 'null') {
+        newStatus[key] = true
+      } else {
+        newStatus[key] = false
+      }
+    })
+    return newStatus;
+  }
+  // 渲染第四个筛选器
+  renderFilterMore = () => {
+    if (this.state.openType === 'more') {
+      const { oriented, floor, roomType, characteristic } = this.filterData
+      const data = { oriented, floor, roomType, characteristic }
+      return (
+        <FilterMore data={data} onOk={this.onOk} onCancel={this.onCancel} />
+      )
+    }
   }
   render() {
     return (
@@ -67,12 +148,13 @@ export default class Filter extends Component {
 
           {/* 前三个菜单对应的内容： */}
           {
-            this.isShowPicker() ? <FilterPicker onOk={this.onOk} onCancel={this.onCancel} /> : null
+            // 渲染picker并提供对应的数据
+            this.renderPicker()
           }
 
 
           {/* 最后一个菜单对应的内容： */}
-          {/* <FilterMore /> */}
+          {this.renderFilterMore()}
         </div>
       </div>
     )
