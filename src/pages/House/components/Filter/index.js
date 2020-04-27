@@ -50,14 +50,16 @@ export default class Filter extends Component {
   }
   // 确定选择过滤条件
   onOk = (curSel) => {
-    // console.log(curSel);
     const { openType } = this.state;
     // 存储当前选中筛选数据
     this.selectedValues[openType] = curSel
+    // console.log('接收到的子组件传来的数据：', curSel, this.selectedValues);
     this.setState({
       openType: '',
       // 处理高亮
       titleSelectedStatus: this.handlerSel()
+    }, () => {
+      this.props.onFilter(this.formatFilters(this.selectedValues))
     })
   }
   // 关闭前三个筛选器内容和遮罩层
@@ -120,6 +122,8 @@ export default class Filter extends Component {
         newStatus[key] = true
       } else if (key === 'price' && selectVal[0] !== 'null') {
         newStatus[key] = true
+      } else if (key === 'more' && selectVal.length > 0) {
+        newStatus[key] = true
       } else {
         newStatus[key] = false
       }
@@ -130,11 +134,38 @@ export default class Filter extends Component {
   renderFilterMore = () => {
     if (this.state.openType === 'more') {
       const { oriented, floor, roomType, characteristic } = this.filterData
+      // 数据通过父传子渲染
       const data = { oriented, floor, roomType, characteristic }
       return (
-        <FilterMore data={data} onOk={this.onOk} onCancel={this.onCancel} />
+        <FilterMore value={this.selectedValues[this.state.openType]} data={data} onOk={this.onOk} onCancel={this.onCancel} />
       )
     }
+  }
+  // 点击确认后处理所有筛选器数据 =》 后台同学需要的格式
+  formatFilters = (val) => {
+    // console.log(val);
+    // 获取存储的筛选条件数据
+    const { area, mode, price, more } = val;
+    const filters = {}
+    // 区域下边：区域 ｜ 地铁
+    let areaKey = area[0]
+    if (area.length === 2) {
+      filters[areaKey] = area[1]
+    } else {
+      if (area[2] === 'null') {
+        filters[areaKey] = area[1]
+      } else {
+        filters[areaKey] = area[2]
+      }
+    }
+    // filters[areaKey] = filters.area
+    // 出租方式 价格
+    filters.rentType = mode[0]
+    filters.price = price[0]
+    // 更多
+    filters.more = more.join(',')
+    // console.log(filters);
+    return filters
   }
   render() {
     return (

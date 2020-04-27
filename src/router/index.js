@@ -4,7 +4,7 @@ import Home from '../pages/Home';
 import CityList from '../pages/CityList';
 import Map from '../pages/Map';
 import Fn404 from '../pages/NotFound';
-
+import HouseDetail from '../components/HouseDetail'
 class index extends Component {
   render() {
     return (
@@ -19,6 +19,8 @@ class index extends Component {
             <Route path="/home" component={Home} />
             <Route path="/cityList" component={CityList} />
             <Route path="/map" component={Map} />
+            {/* // 配置路由 */}
+            <Route path="/detail/:id" component={HouseDetail} />
             {/* 404页面 */}
             <Route component={Fn404} />
           </Switch>

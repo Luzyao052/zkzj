@@ -48,3 +48,4 @@ export const createAPI = (url, method, data) => {
 
 // 对外导出axios对象
 export default instance
+export { BASE_URL }
