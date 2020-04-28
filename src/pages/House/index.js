@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Flex, Toast } from 'antd-mobile'
+import { Toast } from 'antd-mobile'
 import Filter from './components/Filter'
 // 导入样式
 import styles from './index.module.css'
@@ -71,7 +71,11 @@ export default class HouseList extends React.Component {
     item.src = `${BASE_URL}${item.houseImg}`
     return (
       <HouseItem onClick={() => {
-        this.props.history.push('/detail/' + item.houseCode)
+        // h5 history模式路径传参，在this.props.location.state可以拿到
+        // 如果哈希模式使用这种格式传参，会接受到undefined
+        this.props.history.push('/detail/' + item.houseCode, { id: item.houseCode, a: 10 })
+        // hash模式的路径传参 在this.props.location.state可以拿到
+        // this.props.history.push({ pathname: '/detail/' + item.houseCode, state: { id: item.houseCode, a: 10 } })
       }} {...item} key={key} style={style} />
     );
   }

@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { Carousel, Flex, Modal, Toast, NavBar, Icon } from 'antd-mobile'
-import axios from 'axios'
+import { Carousel, Flex, Modal, NavBar, Icon } from 'antd-mobile'
 import HouseItem from '../HouseItem'
 import styles from './index.module.css'
 import HousePackage from '../HousePackage'
+import { apiDetail } from '../../api/house'
 const BASE_URL = `https://api-haoke-web.itheima.net`
 // 猜你喜欢
 const recommendHouses = [
@@ -135,18 +135,15 @@ export default class HouseDetail extends Component {
       isLoading: true
     })
 
-    const res = await axios.get(
-      `https://api-haoke-web.itheima.net/houses/5cc47c8d1439630e5b47d45d`
-    )
-
-    // console.log(res.data.body)
+    const res = await apiDetail(id)
+    // console.log(res.body)
 
     this.setState({
-      houseInfo: res.data.body,
+      houseInfo: res.body,
       isLoading: false
     })
 
-    const { community, coord } = res.data.body
+    const { community, coord } = res.body
 
     // 渲染地图
     this.renderMap(community, coord)
@@ -159,7 +156,7 @@ export default class HouseDetail extends Component {
     } = this.state
 
     return houseImg.map(item => (
-      <a key={item} href="http://itcast.cn">
+      <a key={item} href="http://www.baidu.com">
         <img src={BASE_URL + item} alt="" />
       </a>
     ))
@@ -231,7 +228,7 @@ export default class HouseDetail extends Component {
         <NavBar
           mode="dark"
           icon={<Icon type="left" />}
-          onLeftClick={() => console.log('onLeftClick')}
+          onLeftClick={() => this.props.history.goBack()}
           rightContent={[<i key="share" className="iconfont icon-share" />]}
         >
           房屋详情

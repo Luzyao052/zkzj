@@ -5,3 +5,6 @@ export const apiHouseCondition = data => createAPI('/houses/condition', 'get', d
 
 // 根据条件查询房屋
 export const apiHouseList = data => createAPI('/houses', 'get', data)
+
+// 获取房屋详情
+export const apiDetail = data => createAPI(`/houses/${data}`, 'get')
