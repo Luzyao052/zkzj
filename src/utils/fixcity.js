@@ -2,9 +2,10 @@
 
 import { apiAreaInfo } from "../api/city"
 const KEY = 'zkzj_city'
+const LOGIN_TOKEN = 'LOGIN_TOKEN'
 // 封装本地存储方法
 // 存储本地数据
-export const setLocal = (key, val) => localStorage.setItem(key, val)
+export const setLocal = (key, val) => window.localStorage.setItem(key, val)
 // 获取本地数据
 export const getLocal = key => localStorage.getItem(key)
 // 删除本地数据
@@ -39,4 +40,4 @@ export const getCurrCity = async () => {
     return Promise.resolve(currCity)
   }
 }
-export { KEY }
+export { KEY, LOGIN_TOKEN }
