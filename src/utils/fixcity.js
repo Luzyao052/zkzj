@@ -40,4 +40,24 @@ export const getCurrCity = async () => {
     return Promise.resolve(currCity)
   }
 }
+// 储存用户信息
+const setUser = (user) => {
+  window.localStorage.setItem(LOGIN_TOKEN, JSON.stringify(user))
+}
+// 获取用户信息
+const getUser = () => {
+  return JSON.parse(window.localStorage.getItem(LOGIN_TOKEN) || '{}')
+}
+// 删除用户信息
+const delUser = () => {
+  window.localStorage.removeItem(LOGIN_TOKEN)
+}
+const isAuth = () => !!getUser()
+// 导出
+export default {
+  setUser,
+  getUser,
+  delUser,
+  isAuth
+}
 export { KEY, LOGIN_TOKEN }

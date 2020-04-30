@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom'
 
 import styles from './index.module.css'
 import { apiLogin } from '../../api/user'
-import { setLocal, LOGIN_TOKEN } from '../../utils/fixcity'
+// import { setLocal, LOGIN_TOKEN } from '../../utils/fixcity'
+import Auth from '../../utils/fixcity'
 import { withFormik } from 'formik';
 import * as yup from 'yup'; // for everything
 // let yup = require('yup');
@@ -115,8 +116,9 @@ const NewLogin = withFormik({
     // console.log(status, description, body);
     if (status === 200) {
       Toast.success(description, 2)
-      setLocal(LOGIN_TOKEN, body.token)
-      formikBag.props.history.push('/')
+      // setLocal(LOGIN_TOKEN, body.token)
+      Auth.setUser(body.token)
+      formikBag.props.history.push('/home/profile')
     } else {
       Toast.fail(description)
     }

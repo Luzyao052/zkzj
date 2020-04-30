@@ -1,17 +1,19 @@
 import axios from 'axios'
 import { Toast } from 'antd-mobile';
-import { getLocal, LOGIN_TOKEN } from './fixcity';
+import auth from '../utils/fixcity'
+// import { getLocal, LOGIN_TOKEN } from './fixcity';
 const BASE_URL = 'https://api-haoke-web.itheima.net'
 var instance = axios.create({
   baseURL: BASE_URL
 });
+// axios.defaults.headers.authorization = auth.getUser()
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
   Toast.loading('加载中...', 0);
   // 在发送请求之前做些什么
   // console.log(config);
-  const user = getLocal(LOGIN_TOKEN)
-  if (user) config.headers.Authorization = `Bearer ${user}`
+  const user = auth.getUser()
+  if (user) config.headers.Authorization = user
   return config;
 }, function (error) {
   // 对请求错误做些什么
